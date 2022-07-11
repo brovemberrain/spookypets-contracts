@@ -16,7 +16,6 @@ contract SpookyPets is ERC721, Ownable {
 
   uint256 private _counter;
 
-  uint256 private startingBlockNumber;
   bool private PAUSE = false;
   bool private hasReserved = false;
 
@@ -30,7 +29,6 @@ contract SpookyPets is ERC721, Ownable {
 
   constructor(string memory _defaultBaseURI) ERC721("SpookyPets", "SP") {
     setBaseURI(_defaultBaseURI);
-    startingBlockNumber = block.number; // immediately enable contract
   }
 
   /**
@@ -131,27 +129,15 @@ contract SpookyPets is ERC721, Ownable {
       require(false, "owner index out of bounds");
   }
 
-  function mint() public payable saleIsOpen {
-    require(_totalSupply() + 1 <= MAX_ELEMENTS - RESERVE, "Max limit reached");
-    require(msg.value >= PRICE, "Value below price");
-
-    _mint(msg.sender, _counter);
-
-    emit WelcomeToSpookyPets(_counter);
-
-    _counter++;
-  }
-
-  function mintMultiple(uint _count) public payable saleIsOpen {
+  function mint(uint _count) public payable saleIsOpen {
     require(_totalSupply() + _count <= MAX_ELEMENTS - RESERVE, "Max limit reached");
     require(msg.value >= price(_count), "Value below price");
 
     for (uint256 i; i < _count; i++) {
-      _mint(msg.sender, _counter);
-
-      emit WelcomeToSpookyPets(_counter);
-
+      _safeMint(msg.sender, _counter);
       _counter++;
+
+      emit WelcomeToSpookyPets(_counter - 1);
     }
   }
 
@@ -175,20 +161,19 @@ contract SpookyPets is ERC721, Ownable {
   */
   function reserveForOwner() public onlyOwner {
     require(!hasReserved, 'Sorry, reserve already happened.');
+    hasReserved = true;
 
     for (uint256 i; i < RESERVE; i++) {
-      _safeMint(msg.sender, _counter + i);
+      _mint(msg.sender, _counter + i);
 
       emit WelcomeToSpookyPets(_counter + i);
     }
 
     _counter += RESERVE;
-
-    hasReserved = true;
   }
 
   /**
-  * @dev Sets the prices for minting - in case of cataclysmic ETH price movements
+  * @dev Sets the prices for minting - in case of cataclysmic price movements
   */
   function setPrice(uint256 _price) external onlyOwner notLocked {
     require(_price > 0, "Invalid prices.");

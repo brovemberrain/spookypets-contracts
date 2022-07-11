@@ -39,8 +39,9 @@ describe('deployment', async () => {
 
 describe('minting', async () => {
   it('can mint 1 token', async () => {
-    const { chainId: networkId } = await ethers.provider.getNetwork();
     const contractAddress = contract.address;
+    const mintCount = 1;
+    const currentSupply = await contract.totalSupply();
     const nonce = await ethers.provider.getTransactionCount(accounts[0].address, 'latest'); //get latest nonce
     //the transaction
     const tx = {
@@ -51,19 +52,19 @@ describe('minting', async () => {
       // maxFeePerGas: new web3.utils.BN(web3.utils.toWei('250', 'gwei')),
       // maxPriorityFeePerGas: new web3.utils.BN(web3.utils.toWei('4', 'gwei')),
       'value': BigNumber.from(Web3.utils.toWei('60', 'ether')).toHexString(),
-      'data': contract.interface.encodeFunctionData('mint', []),
+      'data': contract.interface.encodeFunctionData('mint', [mintCount]),
     };
     const result = await accounts[0].sendTransaction(tx);
-    
-    const tokenOwner = await contract.ownerOf(0)
+
     const totalSupply = await contract.totalSupply();
     // SUCCESS
-    assert.equal(totalSupply, 1)
-    assert.equal(tokenOwner, accounts[0].address)
+    assert.equal(BigNumber.from(totalSupply).toNumber(), BigNumber.from(currentSupply).toNumber() + mintCount)
   })
 
   it('can mint 5 tokens', async () => {
+    const mintCount = 5;
     const contractAddress = contract.address;
+    const currentSupply = await contract.totalSupply();
     const nonce = await ethers.provider.getTransactionCount(accounts[0].address, 'latest'); //get latest nonce
     //the transaction
     const tx = {
@@ -74,16 +75,16 @@ describe('minting', async () => {
       // maxFeePerGas: new web3.utils.BN(web3.utils.toWei('250', 'gwei')),
       // maxPriorityFeePerGas: new web3.utils.BN(web3.utils.toWei('4', 'gwei')),
       'value': BigNumber.from(Web3.utils.toWei('300', 'ether')).toHexString(),
-      'data': contract.interface.encodeFunctionData('mintMultiple', [5]),
+      'data': contract.interface.encodeFunctionData('mint', [mintCount]),
     };
     const result = await accounts[0].sendTransaction(tx);
 
     const totalSupply = await contract.totalSupply();
     // SUCCESS
-    assert.equal(totalSupply, 6)
+    assert.equal(BigNumber.from(totalSupply).toNumber(), BigNumber.from(currentSupply).toNumber() + mintCount)
   })
 
-  it('account has balance of 6', async () => {
+  it('account has balance of totalSupply', async () => {
     const balance = await contract.balanceOf(accounts[0].address)
 
     for (let i = 0; i < balance; i++) {
@@ -91,7 +92,10 @@ describe('minting', async () => {
       const tokenURI = await contract.tokenURI(token.toNumber())
     }
 
-    assert.equal(balance, 6, 'has 6 token balance');
+    const totalSupply = await contract.totalSupply()
+
+    // success
+    assert.equal(BigNumber.from(balance).toNumber(), BigNumber.from(totalSupply).toNumber(), `has ${totalSupply} token balance`);
   })
 })
 
@@ -117,11 +121,54 @@ describe('reserve mints', async () => {
     const token2 = await contract.tokenOfOwnerByIndex(accounts[0].address, 1);
     const token3 = await contract.tokenOfOwnerByIndex(accounts[0].address, 2);
 
-    assert.notEqual(token2, token3);
+    assert.notEqual(BigNumber.from(token2).toNumber(), BigNumber.from(token3).toNumber());
   })
 
   it('can\'t reserve twice', async () => {
-    await expect(contract.reserveForOwner()).to.eventually.be.rejected
+    await expect(contract.reserveForOwner()).to.eventually.be.rejected;
+  })
+})
+
+describe('pause', async () => {
+  it('can pause contract', async () => {
+    await expect(contract.setPause(true)).to.eventually.be.fulfilled;
+
+    const contractAddress = contract.address;
+    const mintCount = 1;
+    const nonce = await ethers.provider.getTransactionCount(accounts[0].address, 'latest'); //get latest nonce
+    //the transaction
+    const tx = {
+      'from': accounts[0].address,
+      'to': contractAddress,
+      'nonce': nonce,
+      'gasLimit': 500000,
+      // maxFeePerGas: new web3.utils.BN(web3.utils.toWei('250', 'gwei')),
+      // maxPriorityFeePerGas: new web3.utils.BN(web3.utils.toWei('4', 'gwei')),
+      'value': BigNumber.from(Web3.utils.toWei('60', 'ether')).toHexString(),
+      'data': contract.interface.encodeFunctionData('mint', [mintCount]),
+    };
+    await expect(accounts[0].sendTransaction(tx)).to.eventually.be.rejected;
+  })
+
+  it('can unpause contract', async () => {
+    // todo: need to ensure all tokens are minted before attempting to lock, or it will fail
+    await expect(contract.setPause(false)).to.eventually.be.fulfilled;
+
+    const contractAddress = contract.address;
+    const mintCount = 1;
+    const nonce = await ethers.provider.getTransactionCount(accounts[0].address, 'latest'); //get latest nonce
+    //the transaction
+    const tx = {
+      'from': accounts[0].address,
+      'to': contractAddress,
+      'nonce': nonce,
+      'gasLimit': 500000,
+      // maxFeePerGas: new web3.utils.BN(web3.utils.toWei('250', 'gwei')),
+      // maxPriorityFeePerGas: new web3.utils.BN(web3.utils.toWei('4', 'gwei')),
+      'value': BigNumber.from(Web3.utils.toWei('60', 'ether')).toHexString(),
+      'data': contract.interface.encodeFunctionData('mint', [mintCount]),
+    };
+    await expect(accounts[0].sendTransaction(tx)).to.eventually.be.fulfilled;
   })
 })
 
