@@ -88,11 +88,8 @@ contract SpookyPets is ERC721, Ownable {
 
   function getTokenURI(uint256 _tokenId) public view returns (string memory) {
     require(_exists(_tokenId), "ERC721Metadata: URI query for nonexistent token");
+    require(_tokenId <= _totalSupply(), "ERC721Metadata: URI query for nonexistent token");
     string memory base = baseTokenURI;
-
-    if (_tokenId > _totalSupply()) {
-      return bytes(base).length > 0 ? string( abi.encodePacked(base, "0.json") ) : "";
-    }
 
     return bytes(base).length > 0 ? string( abi.encodePacked(base, uintToString(_tokenId), ".json") ) : "";
   }
