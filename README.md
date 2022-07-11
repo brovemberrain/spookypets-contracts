@@ -2,18 +2,30 @@
 
 This is the EVM smart contract for the Spookypets project.
 
-# Basic Sample Hardhat Project
+## Installation
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+```
+yarn install
+```
 
-Try running some of the following tasks:
+## Testing
 
-```shell
-npx hardhat accounts
+```
+yarn run test
+```
+
+## Compiling
+
+Running tests will automatically compile the contract, however you can compile independently with:
+
+```
 npx hardhat compile
+```
+
+## Clean
+
+You can clear the cache & artifacts with:
+
+```
 npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
 ```
