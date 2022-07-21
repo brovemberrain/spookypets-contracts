@@ -188,23 +188,6 @@ describe('lock', async () => {
   // })
 })
 
-describe('transfer', async () => {
-  it('can transfer tokens', async () => {
-    await expect(contract.transferFrom('0x1B930f5F02DBf357A750E951Eb6D8b9d768FB14B', '0x683D64c2018F98bfA44CbB3d96B88D0D30610a4e', 0)).to.eventually.be.fulfilled
-    await expect(contract.transferFrom('0x1B930f5F02DBf357A750E951Eb6D8b9d768FB14B', '0x683D64c2018F98bfA44CbB3d96B88D0D30610a4e', 1)).to.eventually.be.fulfilled
-  })
-
-  // it('can lock', async () => {
-  //   // todo: need to ensure all tokens are minted before attempting to lock, or it will fail
-  //   await contract.lock();
-  // })
-
-  // it('cannot change baseuri after locking', async () => {
-  //   // todo: need to ensure previous test to lock works so this will be rejected
-  //   await expect(contract.setBaseURI('https://example.com')).to.eventually.be.rejected
-  // })
-})
-
 describe('burn', async () => {
   it('can burn token', async () => {
     const prevTokenAtIndex2 = await contract.tokenOfOwnerByIndex(accounts[0].address, 2)
