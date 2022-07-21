@@ -13,6 +13,19 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
+const getHDWallet = () => {
+  const { MNEMONIC, PRIVATE_KEY } = process.env;
+  if (MNEMONIC && MNEMONIC !== "") {
+    return {
+      mnemonic: MNEMONIC,
+    }
+  }
+  if (PRIVATE_KEY && PRIVATE_KEY !== "") {
+    return [PRIVATE_KEY]
+  }
+  throw Error("Private Key Not Set! Please set up .env");
+}
+
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 
@@ -25,24 +38,24 @@ module.exports = {
     hardhat: {
     },
     cronosTestnet: {
-      url: 'https://evm-t3.cronos.org/:8545',
-      accounts: [],
+      url: 'https://evm-t3.cronos.org/',
+      accounts: getHDWallet(),
     },
     cronos: {
       url: 'https://evm-cronos.crypto.org/',
-      accounts: [],
+      accounts: getHDWallet(),
     },
   },
-  etherscan: {
-    // Your API key for Etherscan
-    // Obtain one at https://etherscan.io/
-    apiKey: {
-      mainnet: process.env.ETHERSCAN_API_KEY,
-      // polygon
-      polygon: process.env.POLYGONSCAN_API_KEY,
-      polygonMumbai: process.env.POLYGONSCAN_API_KEY,
-    }
-  },
+  // etherscan: {
+  //   // Your API key for Etherscan
+  //   // Obtain one at https://etherscan.io/
+  //   apiKey: {
+  //     mainnet: process.env.ETHERSCAN_API_KEY,
+  //     // polygon
+  //     polygon: process.env.POLYGONSCAN_API_KEY,
+  //     polygonMumbai: process.env.POLYGONSCAN_API_KEY,
+  //   }
+  // },
   solidity: {
     version: "0.8.4",
     settings: {

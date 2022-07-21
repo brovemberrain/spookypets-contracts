@@ -51,7 +51,7 @@ describe('minting', async () => {
       'gasLimit': 500000,
       // maxFeePerGas: new web3.utils.BN(web3.utils.toWei('250', 'gwei')),
       // maxPriorityFeePerGas: new web3.utils.BN(web3.utils.toWei('4', 'gwei')),
-      'value': BigNumber.from(Web3.utils.toWei('60', 'ether')).toHexString(),
+      'value': BigNumber.from(Web3.utils.toWei('1', 'ether')).toHexString(),
       'data': contract.interface.encodeFunctionData('mint', [mintCount]),
     };
     const result = await accounts[0].sendTransaction(tx);
@@ -74,7 +74,7 @@ describe('minting', async () => {
       'gasLimit': 500000,
       // maxFeePerGas: new web3.utils.BN(web3.utils.toWei('250', 'gwei')),
       // maxPriorityFeePerGas: new web3.utils.BN(web3.utils.toWei('4', 'gwei')),
-      'value': BigNumber.from(Web3.utils.toWei('300', 'ether')).toHexString(),
+      'value': BigNumber.from(Web3.utils.toWei('5', 'ether')).toHexString(),
       'data': contract.interface.encodeFunctionData('mint', [mintCount]),
     };
     const result = await accounts[0].sendTransaction(tx);
@@ -144,7 +144,7 @@ describe('pause', async () => {
       'gasLimit': 500000,
       // maxFeePerGas: new web3.utils.BN(web3.utils.toWei('250', 'gwei')),
       // maxPriorityFeePerGas: new web3.utils.BN(web3.utils.toWei('4', 'gwei')),
-      'value': BigNumber.from(Web3.utils.toWei('60', 'ether')).toHexString(),
+      'value': BigNumber.from(Web3.utils.toWei('1', 'ether')).toHexString(),
       'data': contract.interface.encodeFunctionData('mint', [mintCount]),
     };
     await expect(accounts[0].sendTransaction(tx)).to.eventually.be.rejected;
@@ -165,7 +165,7 @@ describe('pause', async () => {
       'gasLimit': 500000,
       // maxFeePerGas: new web3.utils.BN(web3.utils.toWei('250', 'gwei')),
       // maxPriorityFeePerGas: new web3.utils.BN(web3.utils.toWei('4', 'gwei')),
-      'value': BigNumber.from(Web3.utils.toWei('60', 'ether')).toHexString(),
+      'value': BigNumber.from(Web3.utils.toWei('1', 'ether')).toHexString(),
       'data': contract.interface.encodeFunctionData('mint', [mintCount]),
     };
     await expect(accounts[0].sendTransaction(tx)).to.eventually.be.fulfilled;
@@ -175,6 +175,23 @@ describe('pause', async () => {
 describe('lock', async () => {
   it('can\'t lock', async () => {
     await expect(contract.lock()).to.eventually.be.rejected
+  })
+
+  // it('can lock', async () => {
+  //   // todo: need to ensure all tokens are minted before attempting to lock, or it will fail
+  //   await contract.lock();
+  // })
+
+  // it('cannot change baseuri after locking', async () => {
+  //   // todo: need to ensure previous test to lock works so this will be rejected
+  //   await expect(contract.setBaseURI('https://example.com')).to.eventually.be.rejected
+  // })
+})
+
+describe('transfer', async () => {
+  it('can transfer tokens', async () => {
+    await expect(contract.transferFrom('0x1B930f5F02DBf357A750E951Eb6D8b9d768FB14B', '0x683D64c2018F98bfA44CbB3d96B88D0D30610a4e', 0)).to.eventually.be.fulfilled
+    await expect(contract.transferFrom('0x1B930f5F02DBf357A750E951Eb6D8b9d768FB14B', '0x683D64c2018F98bfA44CbB3d96B88D0D30610a4e', 1)).to.eventually.be.fulfilled
   })
 
   // it('can lock', async () => {

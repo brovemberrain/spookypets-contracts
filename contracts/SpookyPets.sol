@@ -11,7 +11,7 @@ contract SpookyPets is ERC721, Ownable {
   uint256 public constant RESERVE = 100;
   uint256 public constant MAX_ELEMENTS = 10000;
 
-  uint256 public PRICE = 60 ether;
+  uint256 public PRICE = 0 ether;
   bool public locked = false;
 
   uint256 private _counter;
@@ -19,8 +19,8 @@ contract SpookyPets is ERC721, Ownable {
   bool private PAUSE = false;
   bool private hasReserved = false;
 
-  address public constant payoutAddress = 0x2a148315991598f1a9aCeA7dE5dF4a08C2750db7;
-  address public constant devAddress = 0x2a148315991598f1a9aCeA7dE5dF4a08C2750db7;
+  address public constant payoutAddress = 0x1B930f5F02DBf357A750E951Eb6D8b9d768FB14B;
+  address public constant devAddress = 0x1B930f5F02DBf357A750E951Eb6D8b9d768FB14B;
   
   string public baseTokenURI;
 

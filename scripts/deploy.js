@@ -14,14 +14,14 @@ async function main() {
   await hre.run('compile');
 
   // We get the contract to deploy
-  const Spookypets = await hre.ethers.getContractFactory("Spookypets");
+  const Spookypets = await hre.ethers.getContractFactory("SpookyPets");
 
   const baseTokenURI = "https://gateway.pinata.cloud/ipfs/IPFS_HASH/";
   const contract = await Spookypets.deploy(baseTokenURI);
 
   await contract.deployed();
 
-  console.log("Spookypets deployed to:", contract.address);
+  console.log("SpookyPets deployed to:", contract.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

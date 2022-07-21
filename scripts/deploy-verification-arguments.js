@@ -1,0 +1,1 @@
+module.exports = ["https://gateway.pinata.cloud/ipfs/IPFS_HASH/"];
